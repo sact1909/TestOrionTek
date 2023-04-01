@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TestOrionTek.Views.UpdateEmployee"
+             Title="{Binding Title}">
+  <ContentPage.Content>
+    <ScrollView>
+      <StackLayout Orientation="Vertical" Margin="0,0,0,15">
+        <Label Text="Update Employee" FontSize="Large" HorizontalOptions="CenterAndExpand" Margin="0,10" FontAttributes="Bold"/>
+        <Grid RowDefinitions="*,*,*,*,*,Auto,Auto,Auto" ColumnDefinitions="Auto,*" Margin="15,0">
+          <Label Text="First Name:"
+                 VerticalOptions="Center"
+                 Grid.Row="0"
+                 Grid.Column="0"/>
+          <Entry Text="{Binding Employee.FirstName}"
+                 Grid.Row="0"
+                 Grid.Column="1"/>
+
+          <Label Text="Last Name:"
+                 VerticalOptions="Center"
+                 Grid.Row="1"
+                 Grid.Column="0"/>
+          <Entry Text="{Binding Employee.LastName}"
+                 Grid.Row="1"
+                 Grid.Column="1"/>
+
+          <Label Text="Company ID:"
+                 VerticalOptions="Center"
+                 Grid.Row="2"
+                 Grid.Column="0"/>
+          <Entry Text="{Binding Employee.CompanyID}"
+                 Grid.Row="2"
+                 Grid.Column="1"/>
+
+
+          <Label Text="Phone:"
+                 VerticalOptions="Center"
+                 Grid.Row="3"
+                 Grid.Column="0"/>
+          <Entry Text="{Binding Employee.Phone}"
+                 Grid.Row="3"
+                 Grid.Column="1"/>
+
+
+          <Label Text="Position:"
+                 VerticalOptions="Center"
+                 Grid.Row="4"
+                 Grid.Column="0"/>
+          <Entry Text="{Binding Employee.Position}"
+                 Grid.Row="4"
+                 Grid.Column="1"/>
+
+          <StackLayout Grid.Row="5"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       Orientation="Vertical">
+            <Button Text="Add a new Address" Command="{Binding AddNewAddresCommand}"/>
+            <StackLayout BindableLayout.ItemsSource="{Binding Address, Mode=TwoWay}">
+              <BindableLayout.ItemTemplate>
+                <DataTemplate>
+                  <StackLayout Orientation="Horizontal">
+                    <Entry Text="{Binding AddressName,Mode=TwoWay}" HorizontalOptions="FillAndExpand" />
+                    <Button Text="X"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type StackLayout}, AncestorLevel=2}, Path=BindingContext.RemoveAddressCommand}"
+                                CommandParameter="{Binding .}" />
+                  </StackLayout>
+                </DataTemplate>
+              </BindableLayout.ItemTemplate>
+            </StackLayout>
+          </StackLayout>
+          <Button Text="Save"
+                  Command="{Binding UpdateUserCommand}"
+                  Grid.Row="6"
+                  Grid.Column="0" />
+          <Button Text="Cancel"
+                  Command="{Binding CancelCommand}"
+                  Grid.Row="6"
+                  Grid.Column="1" />
+          <Label Text="{Binding ErrorMessage}"
+                 TextColor="Red"
+                 Grid.Row="7"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"/>
+        </Grid>
+      </StackLayout>
+    </ScrollView>
+  </ContentPage.Content>
+</ContentPage>

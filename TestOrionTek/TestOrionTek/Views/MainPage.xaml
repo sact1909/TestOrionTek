@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TestOrionTek.Views.MainPage"
+             Title="{Binding Title}">
+
+  <ContentPage.Content>
+      <StackLayout>
+        <Grid>
+          <CollectionView ItemsSource="{Binding EmployeesList}">
+            <CollectionView.ItemTemplate>
+              <DataTemplate>
+                <StackLayout Padding="10,10,10,5">
+                <Frame CornerRadius="10" Padding="0">
+                  <SwipeView Padding="0">
+                    <SwipeView.LeftItems>
+                      <SwipeItems>
+                        <SwipeItem Text="Delete"
+                                   BackgroundColor="Red"
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.RemoveEmployeeCommand}"
+                                   CommandParameter="{Binding .}"/>
+                        <SwipeItem Text="Editar"
+                                   BackgroundColor="Green"
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.GoToUpdateCommand}"
+                                   CommandParameter="{Binding ID}"/>
+                      </SwipeItems>
+                    </SwipeView.LeftItems>
+                    <StackLayout Margin="20">
+                      <StackLayout>
+                        <Grid RowDefinitions="*,*,Auto" ColumnDefinitions="*,*">
+                          <StackLayout Orientation="Horizontal"
+                                       Grid.Column="0"
+                                       Grid.Row="0">
+                            <Label Text="ID:" FontAttributes="Bold"/>
+                            <Label Text="{Binding CompanyID}"/>
+                          </StackLayout>
+
+                          <StackLayout Orientation="Horizontal"
+                                       Grid.Column="1"
+                                       Grid.Row="0">
+                            <Label Text="Position:"
+                                   FontAttributes="Bold"/>
+                            <Label Text="{Binding Position}"/>
+                          </StackLayout>
+
+                          <StackLayout Orientation="Horizontal"
+                                       Grid.Column="0"
+                                       Grid.Row="1"
+                                       Grid.ColumnSpan="2">
+                            <Label Text="Full Name:"
+                                   FontAttributes="Bold"/>
+                            <Label Text="{Binding FullName}" />
+                          </StackLayout>
+                          <StackLayout Orientation="Horizontal"
+                                       Grid.Column="0"
+                                       Grid.Row="2"
+                                       Grid.ColumnSpan="2">
+                            <Label Text="See More..."
+                                   FontAttributes="Bold" HorizontalOptions="CenterAndExpand"/>
+                            <StackLayout.GestureRecognizers>
+                              <TapGestureRecognizer NumberOfTapsRequired="1"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=BindingContext.GoToDetailCommand}"
+                                        CommandParameter="{Binding ID}"/>
+                            </StackLayout.GestureRecognizers>
+                          </StackLayout>
+                        </Grid>
+                      </StackLayout>
+                    </StackLayout>
+                  </SwipeView>
+                </Frame>
+              </StackLayout>
+              </DataTemplate>
+            </CollectionView.ItemTemplate>
+          </CollectionView>
+        <Frame CornerRadius="28" HasShadow="False"
+               HorizontalOptions="End" VerticalOptions="End"
+               Padding="0" Margin="16"
+               HeightRequest="50" WidthRequest="50" BackgroundColor="Red">
+          <Label Text="+" 
+                 FontSize="30" 
+                 TextColor="White" 
+                 BackgroundColor="#7E7D81"
+                 HorizontalTextAlignment="Center"
+                 VerticalTextAlignment="Center"
+                 AbsoluteLayout.LayoutFlags="PositionProportional"
+                 AbsoluteLayout.LayoutBounds="1,1,AutoSize,AutoSize">
+            <Label.GestureRecognizers>
+              <TapGestureRecognizer Command="{Binding GoToAddNewCommand}" />
+            </Label.GestureRecognizers>
+          </Label>
+        </Frame>
+      </Grid>
+      </StackLayout>
+  </ContentPage.Content>
+
+</ContentPage>
