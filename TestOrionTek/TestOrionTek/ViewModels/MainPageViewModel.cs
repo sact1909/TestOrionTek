@@ -4,21 +4,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using TestOrionTek.DatabaseSettings.DbServices.Abstract;
-using TestOrionTek.DatabaseSettings.Entities;
+using TestOrionTek.Models;
 using PropertyChanged;
 using System.Windows.Input;
 using Xamarin.Forms;
 using TestOrionTek.Views;
 using Prism.AppModel;
 using Xamarin.Essentials;
+using TestOrionTek.ApiSettings;
 
 namespace TestOrionTek.ViewModels
 {
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel : ViewModelBase, IPageLifecycleAware
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBackendClient<ApiMethodCollection> _api;
 
         public List<Employees> EmployeesList { get; set; }
 
@@ -45,22 +45,22 @@ namespace TestOrionTek.ViewModels
         });
 
         public ICommand RemoveEmployeeCommand => new Command<Employees>(async (Employees employee) => {
-            await _unitOfWork.Employees.DeleteItemAsync(employee);
+            await _api.CallAsync(ep => ep.DeleteWithAddressById(employee.Id.ToString()));
             await LoadEmployees();
         });
 
-        public MainPageViewModel(INavigationService navigationService, IUnitOfWork unitOfWork)
+        public MainPageViewModel(INavigationService navigationService, IBackendClient<ApiMethodCollection> api)
             : base(navigationService)
         {
             Title = "Main Page";
-            _unitOfWork = unitOfWork;
+            _api = api;
 
             new Action(async()=> await LoadEmployees())();
         }
 
         async Task LoadEmployees()
         {
-            var result = await _unitOfWork.Employees.GetAllAsync();
+            var result = await _api.CallAsync(ep=>ep.GetAllEmployeesWithAddress());
 
             EmployeesList = result;
         }

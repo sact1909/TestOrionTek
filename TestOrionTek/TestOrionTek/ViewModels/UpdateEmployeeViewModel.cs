@@ -8,8 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TestOrionTek.DatabaseSettings.DbServices.Abstract;
-using TestOrionTek.DatabaseSettings.Entities;
+using TestOrionTek.ApiSettings;
 using TestOrionTek.Extensions;
 using TestOrionTek.Models;
 using Xamarin.Forms;
@@ -18,7 +17,7 @@ namespace TestOrionTek.ViewModels
 {
 	public class UpdateEmployeeViewModel : ViewModelBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBackendClient<ApiMethodCollection> _api;
 
         public string ErrorMessage { get; set; }
 
@@ -34,29 +33,29 @@ namespace TestOrionTek.ViewModels
         {
             await NavigationService.GoBackAsync();
         });
-        public UpdateEmployeeViewModel(INavigationService navigationService, IUnitOfWork unitOfWork)
+        public UpdateEmployeeViewModel(INavigationService navigationService, IBackendClient<ApiMethodCollection> api)
             : base(navigationService)
         {
             Title = "Update Employee";
-            _unitOfWork = unitOfWork;
-
-            
+            _api = api;
         }
 
         async Task GetEmployeeData()
         {
-            Guid id = Guid.Parse(ID);
-            var result = await _unitOfWork.Employees.GetSingleAsync(a=>a.ID == id);
+            var result = await _api.CallAsync(ep=>ep.GetEmployeeWithAddressById(ID));
             Employee = result;
             foreach (var address in Employee.Address)
             {
-                Address.Add(new AddressEntries { AddressName = address });
+                Address.Add(new AddressEntries { AddressName = address.AddressName });
             }
         }
 
         async Task UpdateUser()
         {
-            Employee.Address = Address.Select(a => a.AddressName).ToList();
+            foreach (var address in Address.ToList())
+            {
+                Employee.Address.Add(new Address { AddressName = address.AddressName });
+            }
 
             if (Employee.HasAPropertyEmpty())
             {
@@ -64,7 +63,7 @@ namespace TestOrionTek.ViewModels
                 return;
             }
 
-            await _unitOfWork.Employees.UpdateItemAsync(Employee);
+            await _api.CallAsync(ep => ep.PutEmployee(Employee));
             await NavigationService.GoBackAsync();
         }
 

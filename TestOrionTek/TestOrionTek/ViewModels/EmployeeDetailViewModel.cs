@@ -7,8 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TestOrionTek.DatabaseSettings.DbServices.Abstract;
-using TestOrionTek.DatabaseSettings.Entities;
+using TestOrionTek.ApiSettings;
 using TestOrionTek.Extensions;
 using TestOrionTek.Models;
 using Xamarin.Forms;
@@ -17,7 +16,7 @@ namespace TestOrionTek.ViewModels
 {
 	public class EmployeeDetailViewModel : ViewModelBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBackendClient<ApiMethodCollection> _api;
 
         public string ErrorMessage { get; set; }
 
@@ -29,21 +28,20 @@ namespace TestOrionTek.ViewModels
         {
             await NavigationService.GoBackAsync();
         });
-        public EmployeeDetailViewModel(INavigationService navigationService, IUnitOfWork unitOfWork)
+        public EmployeeDetailViewModel(INavigationService navigationService, IBackendClient<ApiMethodCollection> api)
             : base(navigationService)
         {
             Title = "Detail Employee";
-            _unitOfWork = unitOfWork;
+            _api = api;
         }
 
         async Task GetEmployeeData()
         {
-            Guid id = Guid.Parse(ID);
-            var result = await _unitOfWork.Employees.GetSingleAsync(a => a.ID == id);
+            var result = await _api.CallAsync(ep=>ep.GetEmployeeWithAddressById(ID));
             Employee = result;
             foreach (var address in Employee.Address)
             {
-                Address.Add(new AddressEntries { AddressName = address });
+                Address.Add(new AddressEntries { AddressName = address.AddressName });
             }
         }
 

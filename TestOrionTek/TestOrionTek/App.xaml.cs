@@ -1,12 +1,11 @@
 using Prism;
 using Prism.Ioc;
-using TestOrionTek.DatabaseSettings.DbServices.Abstract;
-using TestOrionTek.DatabaseSettings.DbServices;
 using TestOrionTek.ViewModels;
 using TestOrionTek.Views;
 using Xamarin.Essentials.Implementation;
 using Xamarin.Essentials.Interfaces;
 using Xamarin.Forms;
+using TestOrionTek.ApiSettings;
 
 namespace TestOrionTek
 {
@@ -31,11 +30,11 @@ namespace TestOrionTek
             containerRegistry.RegisterForNavigation<NavigationPage>();
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
             containerRegistry.RegisterForNavigation<AddEmployee, AddEmployeeViewModel>();
-
-            /*UnitOfWork*/
-            containerRegistry.RegisterSingleton<IUnitOfWork, UnitOfWork>();
             containerRegistry.RegisterForNavigation<UpdateEmployee, UpdateEmployeeViewModel>();
             containerRegistry.RegisterForNavigation<EmployeeDetail, EmployeeDetailViewModel>();
+
+            /*API Service*/
+            containerRegistry.RegisterSingleton(typeof(IBackendClient<>),typeof(BackendClient<>));
         }
     }
 }

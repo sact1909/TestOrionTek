@@ -4,23 +4,21 @@ using Prism.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TestOrionTek.DatabaseSettings.DbServices.Abstract;
-using TestOrionTek.DatabaseSettings.Entities;
 using PropertyChanged;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using System.Collections.ObjectModel;
-using TestOrionTek.DatabaseSettings.DbServices;
 using TestOrionTek.Models;
 using TestOrionTek.Extensions;
+using TestOrionTek.ApiSettings;
 
 namespace TestOrionTek.ViewModels
 {
     [AddINotifyPropertyChangedInterface]
 	public class AddEmployeeViewModel : ViewModelBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBackendClient<ApiMethodCollection> _api;
 
         public string ErrorMessage { get; set; }
         public Employees Employee { get; set; } = new Employees();
@@ -34,17 +32,20 @@ namespace TestOrionTek.ViewModels
         {
             await NavigationService.GoBackAsync();
         });
-        public AddEmployeeViewModel(INavigationService navigationService, IUnitOfWork unitOfWork)
+        public AddEmployeeViewModel(INavigationService navigationService, IBackendClient<ApiMethodCollection> api)
             : base(navigationService)
         {
             Title = "Add Employee";
-            _unitOfWork = unitOfWork;
+            _api = api;
             Address.Add(new AddressEntries { AddressName = "" });
         }
 
         async Task CreateUser()
         {
-            Employee.Address = Address.Select(a=>a.AddressName).ToList();
+
+            foreach (var address in Address.ToList()) {
+                Employee.Address.Add(new Address{ AddressName = address.AddressName}); 
+            }
 
             if (Employee.HasAPropertyEmpty())
             {
@@ -52,7 +53,7 @@ namespace TestOrionTek.ViewModels
                 return;
             }
 
-            await _unitOfWork.Employees.SaveItemAsync(Employee);
+            await _api.CallAsync(ep=>ep.PostEmployee(Employee));
             await NavigationService.GoBackAsync();
         }
 
